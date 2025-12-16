@@ -11,7 +11,6 @@
   and camera distance before re-drawing the scene.
 */
 
-
 'use strict';
 
 const mat4 = glMatrix.mat4;
@@ -31,30 +30,31 @@ let woodTexture = null;
 // Camera & matrices
 let viewMatrix = mat4.create();
 let projMatrix = mat4.create();
-let cameraPosition = vec3.fromValues(0.0, 2.0, 6.0);
+// Slightly lower and closer camera for a nicer composition
+let cameraPosition = vec3.fromValues(0.0, 1.6, 4.0);
 
-// Simple rotation around Y for the whole stack
+// Rotation around Y for the whole stack
 let rotationY = 0.0;
 
-// Light properties (single point light)
-const lightPosition = vec3.fromValues(2.0, 3.0, 3.0);
-const lightAmbient  = vec3.fromValues(0.15, 0.15, 0.15);
+// Light properties (single point light, softened)
+const lightPosition = vec3.fromValues(1.8, 2.5, 2.0);
+const lightAmbient  = vec3.fromValues(0.20, 0.20, 0.20);
 const lightDiffuse  = vec3.fromValues(1.0, 1.0, 1.0);
-const lightSpecular = vec3.fromValues(1.0, 1.0, 1.0);
+const lightSpecular = vec3.fromValues(0.9, 0.9, 0.9);
 
-// Material: gold sphere
+// Material: gold sphere (slightly softer highlight)
 const goldAmbient   = [0.25, 0.20, 0.07];
-const goldDiffuse   = [1.0, 0.78, 0.18];
+const goldDiffuse   = [1.0, 0.72, 0.22];
 const goldSpecular  = [0.9, 0.9, 0.9];
-const goldShininess = 64.0;
+const goldShininess = 32.0;
 
-// Material: grey cube
+
 const greyAmbient   = [0.2, 0.2, 0.2];
-const greyDiffuse   = [0.6, 0.6, 0.6];
-const greySpecular  = [0.2, 0.2, 0.2];
-const greyShininess = 16.0;
+const greyDiffuse   = [0.7, 0.7, 0.7];
+const greySpecular  = [0.15, 0.15, 0.15];
+const greyShininess = 8.0;
 
-// Material: wooden floor (color comes mostly from texture)
+
 const floorAmbient   = [0.25, 0.20, 0.15];
 const floorDiffuse   = [1.0, 1.0, 1.0];
 const floorSpecular  = [0.1, 0.1, 0.1];
@@ -78,7 +78,8 @@ function init() {
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
     gl.frontFace(gl.CCW);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+   
+    gl.clearColor(0.03, 0.03, 0.03, 1.0);
     gl.clearDepth(1.0);
     gl.depthFunc(gl.LEQUAL);
 
@@ -130,7 +131,7 @@ function setUpCamera(program) {
     );
 
     const eye    = cameraPosition;
-    const center = vec3.fromValues(0.0, 0.4, 0.0);
+    const center = vec3.fromValues(0.0, 0.8, 0.0); // look slightly above cube center
     const up     = vec3.fromValues(0.0, 1.0, 0.0);
 
     mat4.lookAt(viewMatrix, eye, center, up);
@@ -141,7 +142,7 @@ function setUpCamera(program) {
 }
 
 //
-// Texture setup wood floor
+// Texture setup (wood floor)
 //
 function setUpTextures() {
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -167,7 +168,7 @@ function setUpTextures() {
 }
 
 //
-// sphere, cube, floor
+// Draw the entire scene (sphere, cube, floor)
 //
 function drawShapes() {
     gl.useProgram(phongProgram);
@@ -181,7 +182,7 @@ function drawShapes() {
 
     let model;
 
-    //  Gold sphere 
+    // ===== Gold sphere =====
     model = mat4.create();
     mat4.rotateY(model, model, rotationY);
     mat4.translate(model, model, [0.0, 0.75, 0.0]);  // sit on top of cube
@@ -196,7 +197,7 @@ function drawShapes() {
     gl.bindVertexArray(sphereVAO);
     gl.drawElements(gl.TRIANGLES, sphereShape.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // Grey cube pedestal 
+    // ===== Grey cube pedestal =====
     model = mat4.create();
     mat4.rotateY(model, model, rotationY);
     mat4.translate(model, model, [0.0, -0.25, 0.0]);
@@ -212,9 +213,10 @@ function drawShapes() {
     gl.bindVertexArray(cubeVAO);
     gl.drawElements(gl.TRIANGLES, cubeShape.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // Wooden floor 
+    // ===== Wooden floor =====
     model = mat4.create();
-    mat4.translate(model, model, [0.0, -1.4, 0.0]);
+    // Raises the floor slightly so more wood is visible
+    mat4.translate(model, model, [0.0, -1.1, 0.0]);
     mat4.scale(model, model, [8.0, 0.1, 6.0]);   // big flat slab
     gl.uniformMatrix4fv(phongProgram.uModelMatrix, false, model);
 
@@ -243,7 +245,9 @@ function draw() {
     drawShapes();
 }
 
-
+//
+// Compile/link program and get attribute/uniform locations
+//
 function initPrograms() {
     const vs = getShader('phong-V');
     const fs = getShader('phong-F');
@@ -363,7 +367,7 @@ function getShader(id) {
 }
 
 //
-// Keyboard controls: rotate + zoom
+// Keyboard controls: rotate + zoom + reset
 //
 function handleKey(event) {
     const key = event.key;
@@ -379,13 +383,13 @@ function handleKey(event) {
         cameraPosition[2] += 0.2;
     } else if (key === 'r' || key === 'R') {
         cameraPosition[0] = 0.0;
-        cameraPosition[1] = 2.0;
-        cameraPosition[2] = 6.0;
+        cameraPosition[1] = 1.6;
+        cameraPosition[2] = 4.0;
         rotationY = 0.0;
     }
 
     draw();
 }
 
-// Start everything once the page loads
+
 window.addEventListener('load', init);
