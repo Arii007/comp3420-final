@@ -9,18 +9,15 @@
   (A/D, W/S, R) are used to rotate the object stack and move the camera.
 -->
 
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>COMP 3420 – Final Programming Exam</title>
 
-    
+    <!-- ===== Phong + texture shaders ===== -->
 
-    
+    <!-- Vertex shader -->
     <script id="phong-V" type="x-shader/x-vertex">
         #version 300 es
         precision mediump float;
@@ -47,7 +44,7 @@
         }
     </script>
 
-    
+    <!-- Fragment shader -->
     <script id="phong-F" type="x-shader/x-fragment">
         #version 300 es
         precision mediump float;
@@ -102,13 +99,13 @@
         }
     </script>
 
-    
+    <!-- ===== JS libs & your main script ===== -->
     <script src="gl-matrix-min.js"></script>
     <script src="cgIShape.js"></script>
     <script src="myShapes-min.js"></script>
     <script src="finalMain.js"></script>
 
-   
+    <!-- Wood texture image for the floor -->
     <img id="wood-texture" src="wood-floor.jpg" style="display:none;">
 </head>
 
