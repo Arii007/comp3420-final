@@ -54,7 +54,7 @@ const greyDiffuse   = [0.7, 0.7, 0.7];
 const greySpecular  = [0.15, 0.15, 0.15];
 const greyShininess = 8.0;
 
-// Material: wooden floor (color comes mostly from texture)
+// Material: wooden floor color comes mostly from texture
 const floorAmbient   = [0.25, 0.20, 0.15];
 const floorDiffuse   = [1.0, 1.0, 1.0];
 const floorSpecular  = [0.1, 0.1, 0.1];
@@ -185,7 +185,7 @@ function drawShapes() {
     // ===== Gold sphere =====
     model = mat4.create();
     mat4.rotateY(model, model, rotationY);
-    mat4.translate(model, model, [0.0, 0.75, 0.0]);  // sit on top of cube
+    mat4.translate(model, model, [0.0, 0.75, 0.0]);  
     gl.uniformMatrix4fv(phongProgram.uModelMatrix, false, model);
 
     gl.uniform3fv(phongProgram.uMaterialAmbient,  goldAmbient);
@@ -197,7 +197,7 @@ function drawShapes() {
     gl.bindVertexArray(sphereVAO);
     gl.drawElements(gl.TRIANGLES, sphereShape.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // ===== Grey cube pedestal =====
+    //  Grey cube pedestal 
     model = mat4.create();
     mat4.rotateY(model, model, rotationY);
     mat4.translate(model, model, [0.0, -0.25, 0.0]);
@@ -213,9 +213,9 @@ function drawShapes() {
     gl.bindVertexArray(cubeVAO);
     gl.drawElements(gl.TRIANGLES, cubeShape.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // ===== Wooden floor =====
+    //  Wooden floor 
     model = mat4.create();
-    // Raise the floor slightly so more wood is visible
+    // Raises the floor slightly so more wood is visible
     mat4.translate(model, model, [0.0, -1.1, 0.0]);
     mat4.scale(model, model, [8.0, 0.1, 6.0]);   // big flat slab
     gl.uniformMatrix4fv(phongProgram.uModelMatrix, false, model);
@@ -233,7 +233,7 @@ function drawShapes() {
     gl.bindVertexArray(floorVAO);
     gl.drawElements(gl.TRIANGLES, floorShape.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // Clean
+    
     gl.bindVertexArray(null);
 }
 
@@ -290,7 +290,7 @@ function initPrograms() {
 }
 
 //
-// Build a VAO from a cgIShape object
+// Builds a VAO from a cgIShape object
 //
 function bindVAO(shape, program) {
     const vao = gl.createVertexArray();
@@ -391,5 +391,5 @@ function handleKey(event) {
     draw();
 }
 
-// Start everything once the page loads
+// 
 window.addEventListener('load', init);
